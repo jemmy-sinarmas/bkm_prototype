@@ -7,11 +7,11 @@ class EditMaterialScreen extends StatefulWidget {
   final bool isOperator;
 
   const EditMaterialScreen({
-    Key? key,
+    super.key,
     this.material,
     this.isEditable = true,
     this.isOperator = false,
-  }) : super(key: key);
+  });
 
   @override
   State<EditMaterialScreen> createState() => _EditMaterialScreenState();

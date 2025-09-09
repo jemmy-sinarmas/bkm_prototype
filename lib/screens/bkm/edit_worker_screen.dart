@@ -6,10 +6,10 @@ class EditWorkerScreen extends StatefulWidget {
   final bool isEditable;
 
   const EditWorkerScreen({
-    Key? key,
+    super.key,
     this.worker,
     this.isEditable = true,
-  }) : super(key: key);
+  });
 
   @override
   State<EditWorkerScreen> createState() => _EditWorkerScreenState();

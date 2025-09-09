@@ -3,6 +3,8 @@ import '../models/user.dart';
 import 'bkm/bkm_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -47,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<UserType>(
-                value: _selectedUserType,
+                initialValue: _selectedUserType,
                 decoration: const InputDecoration(labelText: 'User Type'),
                 items: UserType.values.map((type) {
                   return DropdownMenuItem(

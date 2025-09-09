@@ -7,11 +7,11 @@ class EditWorkResultScreen extends StatefulWidget {
   final bool isOperator;
 
   const EditWorkResultScreen({
-    Key? key,
+    super.key,
     this.workResult,
     this.isEditable = true,
     this.isOperator = false,
-  }) : super(key: key);
+  });
 
   @override
   State<EditWorkResultScreen> createState() => _EditWorkResultScreenState();

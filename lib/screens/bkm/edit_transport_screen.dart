@@ -6,10 +6,10 @@ class EditTransportScreen extends StatefulWidget {
   final bool isEditable;
 
   const EditTransportScreen({
-    Key? key,
+    super.key,
     this.transport,
     this.isEditable = true,
-  }) : super(key: key);
+  });
 
   @override
   State<EditTransportScreen> createState() => _EditTransportScreenState();

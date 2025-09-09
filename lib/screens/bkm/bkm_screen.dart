@@ -12,7 +12,7 @@ import 'bkm_preview_screen.dart';
 class BKMScreen extends StatefulWidget {
   final UserType userType;
   
-  const BKMScreen({Key? key, required this.userType}) : super(key: key);
+  const BKMScreen({super.key, required this.userType});
   
   @override
   _BKMListScreenState createState() => _BKMListScreenState();

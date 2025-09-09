@@ -18,11 +18,11 @@ class EditBKMScreen extends StatefulWidget {
   final UserType userType;
 
   const EditBKMScreen({
-    Key? key,
+    super.key,
     required this.bkm,
     this.isEditable = true,
     required this.userType,
-  }) : super(key: key);
+  });
 
   @override
   _EditBKMScreenState createState() => _EditBKMScreenState();

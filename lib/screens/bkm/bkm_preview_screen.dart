@@ -6,10 +6,10 @@ class BKMPreviewScreen extends StatefulWidget {
   final VoidCallback? onSubmit;
 
   const BKMPreviewScreen({
-    Key? key,
+    super.key,
     required this.bkm,
     required this.onSubmit,
-  }) : super(key: key);
+  });
 
   @override
   _BKMPreviewScreenState createState() => _BKMPreviewScreenState();
