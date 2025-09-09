@@ -11,7 +11,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../models/bkm.dart';
 import '../../models/user.dart';
-import 'bkm_preview_screen.dart';
 
 class EditBKMScreen extends StatefulWidget {
   final BKM bkm;
@@ -55,6 +54,28 @@ class _EditBKMScreenState extends State<EditBKMScreen>
       const SnackBar(content: Text('Document saved successfully')),
     );
     Navigator.pop(context, _editableBkm);
+  }
+
+  Widget _buildTab(IconData icon, String text) {
+    return Tab(
+      height: 60,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 16),
+          SizedBox(height: 2),
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 8),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // ============ GENERAL TAB ============
@@ -603,16 +624,18 @@ class _EditBKMScreenState extends State<EditBKMScreen>
             onPressed: _save,
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelStyle: TextStyle(fontSize: 10),
-          tabs: const [
-            Tab(icon: Icon(Icons.info), text: "General"),
-            Tab(icon: Icon(Icons.work), text: "Hasil\nKerja"),
-            Tab(icon: Icon(Icons.inventory), text: "Pemakaian\nBahan"),
-            Tab(icon: Icon(Icons.people), text: "Daftar\nHadir"),
-            Tab(icon: Icon(Icons.local_shipping), text: "Transport"),
-          ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(80),
+          child: TabBar(
+            controller: _tabController,
+            tabs: [
+              _buildTab(Icons.info, "General"),
+              _buildTab(Icons.work, "Hasil\nKerja"),
+              _buildTab(Icons.inventory, "Bahan"),
+              _buildTab(Icons.people, "Daftar\nHadir"),
+              _buildTab(Icons.local_shipping, "Transport"),
+            ],
+          ),
         ),
       ),
       body: TabBarView(
@@ -642,48 +665,19 @@ class _EditBKMScreenState extends State<EditBKMScreen>
               Navigator.pop(context, _editableBkm);
             },
           ),
-          if (_editableBkm.status == 'Draft')
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BKMPreviewScreen(
-                      bkm: _editableBkm,
-                      onSubmit: () {
-                        setState(() => _editableBkm.status = 'Submitted');
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('BKM submitted successfully')),
-                        );
-                      },
-                    ),
-                  ),
-                );
-              },
-              child: const Text('Preview & Submit'),
-            ),
-          if (_editableBkm.status == 'Submitted')
-            ElevatedButton(
-              onPressed: () {
-                setState(() => _editableBkm.status = 'Posted');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('BKM approved and posted')),
-                );
-              },
-              child: const Text('Approve'),
-            ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelStyle: TextStyle(fontSize: 10),
-          tabs: const [
-            Tab(icon: Icon(Icons.info), text: "General"),
-            Tab(icon: Icon(Icons.work), text: "Hasil\nKerja"),
-            Tab(icon: Icon(Icons.inventory), text: "Pemakaian\nBahan"),
-            Tab(icon: Icon(Icons.people), text: "Daftar\nHadir"),
-            Tab(icon: Icon(Icons.local_shipping), text: "Transport"),
-          ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60),
+          child: TabBar(
+            controller: _tabController,
+            tabs: [
+              _buildTab(Icons.info, "General"),
+              _buildTab(Icons.work, "Hasil\nKerja"),
+              _buildTab(Icons.inventory, "Bahan"),
+              _buildTab(Icons.people, "Daftar\nHadir"),
+              _buildTab(Icons.local_shipping, "Transport"),
+            ],
+          ),
         ),
       ),
       body: TabBarView(
@@ -719,16 +713,18 @@ class _EditBKMScreenState extends State<EditBKMScreen>
               onPressed: _save,
             ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelStyle: TextStyle(fontSize: 10),
-          tabs: const [
-            Tab(icon: Icon(Icons.info), text: "General"),
-            Tab(icon: Icon(Icons.work), text: "Hasil\nKerja"),
-            Tab(icon: Icon(Icons.inventory), text: "Pemakaian\nBahan"),
-            Tab(icon: Icon(Icons.people), text: "Daftar\nHadir"),
-            Tab(icon: Icon(Icons.local_shipping), text: "Transport"),
-          ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60),
+          child: TabBar(
+            controller: _tabController,
+            tabs: [
+              _buildTab(Icons.info, "General"),
+              _buildTab(Icons.work, "Hasil\nKerja"),
+              _buildTab(Icons.inventory, "Bahan"),
+              _buildTab(Icons.people, "Daftar\nHadir"),
+              _buildTab(Icons.local_shipping, "Transport"),
+            ],
+          ),
         ),
       ),
       body: TabBarView(
@@ -756,15 +752,18 @@ class _EditBKMScreenState extends State<EditBKMScreen>
               onPressed: _save,
             ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: "General"),
-            Tab(text: "Hasil Kerja"),
-            Tab(text: "Bahan"),
-            Tab(text: "Daftar Hadir"),
-            Tab(text: "Transport"),
-          ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60),
+          child: TabBar(
+            controller: _tabController,
+            tabs: [
+              _buildTab(Icons.info, "General"),
+              _buildTab(Icons.work, "Hasil\nKerja"),
+              _buildTab(Icons.inventory, "Bahan"),
+              _buildTab(Icons.people, "Daftar\nHadir"),
+              _buildTab(Icons.local_shipping, "Transport"),
+            ],
+          ),
         ),
       ),
       body: TabBarView(

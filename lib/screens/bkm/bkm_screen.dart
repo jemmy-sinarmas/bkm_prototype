@@ -230,7 +230,7 @@ class _BKMListScreenState extends State<BKMScreen> {
   }
 
   bool _canEdit(BKM bkm) {
-    return widget.userType == UserType.operator && bkm.status == 'Draft';
+    return bkm.status == 'Draft';
   }
 
   Color _getStatusColor(String status) {
