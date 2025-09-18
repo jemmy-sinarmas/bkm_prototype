@@ -80,20 +80,26 @@ class _EditMaterialScreenState extends State<EditMaterialScreen> {
   }
 
   Widget _buildField(String label, TextEditingController c, {TextInputType keyboard = TextInputType.text}) {
-    return TextField(
-      controller: c,
-      keyboardType: keyboard,
-      enabled: widget.isEditable && !widget.isOperator,
-      decoration: InputDecoration(labelText: label),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: c,
+        keyboardType: keyboard,
+        enabled: widget.isEditable && !widget.isOperator,
+        decoration: InputDecoration(labelText: label),
+      ),
     );
   }
 
   Widget _buildOperatorField(String label, TextEditingController c, {TextInputType keyboard = TextInputType.text}) {
-    return TextField(
-      controller: c,
-      keyboardType: keyboard,
-      enabled: widget.isEditable,
-      decoration: InputDecoration(labelText: label),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: c,
+        keyboardType: keyboard,
+        enabled: widget.isEditable,
+        decoration: InputDecoration(labelText: label),
+      ),
     );
   }
 }
