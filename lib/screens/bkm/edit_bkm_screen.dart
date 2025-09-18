@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../models/bkm.dart';
 import '../../models/user.dart';
+import '../../theme/app_theme.dart';
 
 class EditBKMScreen extends StatefulWidget {
   final BKM bkm;
@@ -59,60 +60,120 @@ class _EditBKMScreenState extends State<EditBKMScreen>
   Widget _buildTab(IconData icon, String text) {
     return Tab(
       height: 60,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 16),
-          SizedBox(height: 2),
-          Flexible(
-            child: Text(
-              text,
-              style: TextStyle(fontSize: 8),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18),
+            const SizedBox(height: 4),
+            Flexible(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   // ============ GENERAL TAB ============
   Widget _buildGeneralInfoTab() {
-    return Form(
-      key: _formKey,
-      child: ListView(
-        padding: const EdgeInsets.all(12),
-        children: [
-          _buildField("No Seri BKM", _editableBkm.noSeriBkm, (val) => _editableBkm.noSeriBkm = val),
-          _buildField("Unit Kerja", _editableBkm.unitKerja, (val) => _editableBkm.unitKerja = val),
-          _buildField("Divisi", _editableBkm.divisi, (val) => _editableBkm.divisi = val),
-          _buildField("Kemandoran", _editableBkm.kemandoran, (val) => _editableBkm.kemandoran = val),
-          _buildField("Nama Mandor", _editableBkm.namaMandor, (val) => _editableBkm.namaMandor = val),
-          _buildUnitKegiatanDropdown(),
-          ListTile(
-            title: const Text("Tanggal Kegiatan"),
-            subtitle: Text("${_editableBkm.tanggalKegiatan.toLocal()}".split(' ')[0]),
-            trailing: widget.isEditable && widget.userType != UserType.operator
-                ? IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: _editableBkm.tanggalKegiatan,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100),
-                      );
-                      if (date != null) {
-                        setState(() => _editableBkm.tanggalKegiatan = date);
-                      }
-                    },
-                  )
-                : null,
-          ),
-          Text("Status: ${_editableBkm.status}"),
-        ],
+    return Container(
+      decoration: AppTheme.gradientBackground,
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: AppTheme.cardDecoration,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "General Information",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildField("No Seri BKM", _editableBkm.noSeriBkm, (val) => _editableBkm.noSeriBkm = val),
+                  const SizedBox(height: 16),
+                  _buildField("Unit Kerja", _editableBkm.unitKerja, (val) => _editableBkm.unitKerja = val),
+                  const SizedBox(height: 16),
+                  _buildField("Divisi", _editableBkm.divisi, (val) => _editableBkm.divisi = val),
+                  const SizedBox(height: 16),
+                  _buildField("Kemandoran", _editableBkm.kemandoran, (val) => _editableBkm.kemandoran = val),
+                  const SizedBox(height: 16),
+                  _buildField("Nama Mandor", _editableBkm.namaMandor, (val) => _editableBkm.namaMandor = val),
+                  const SizedBox(height: 16),
+                  _buildUnitKegiatanDropdown(),
+                  const SizedBox(height: 16),
+                  _buildDateField(),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Text(
+                        "Status: ",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                      AppTheme.statusChip(_editableBkm.status),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateField() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey[50],
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.calendar_today, color: AppTheme.primaryColor),
+        title: const Text("Tanggal Kegiatan"),
+        subtitle: Text(
+          "${_editableBkm.tanggalKegiatan.day}/${_editableBkm.tanggalKegiatan.month}/${_editableBkm.tanggalKegiatan.year}",
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        trailing: widget.isEditable && widget.userType != UserType.operator
+            ? IconButton(
+                icon: const Icon(Icons.edit, color: AppTheme.primaryColor),
+                onPressed: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: _editableBkm.tanggalKegiatan,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2100),
+                  );
+                  if (date != null) {
+                    setState(() => _editableBkm.tanggalKegiatan = date);
+                  }
+                },
+              )
+            : null,
       ),
     );
   }
@@ -158,113 +219,197 @@ class _EditBKMScreenState extends State<EditBKMScreen>
 
   // ============ WORK RESULTS TAB ============
   Widget _buildWorkResultsTab() {
-    return Stack(
-      children: [
-        _editableBkm.workResults.isEmpty
-            ? const Center(child: Text("No Hasil Kerja"))
-            : ListView.builder(
-                itemCount: _editableBkm.workResults.length,
-                itemBuilder: (context, index) {
-                  final h = _editableBkm.workResults[index];
-                  return Card(
-                    margin: const EdgeInsets.all(10),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "No Urut Pekerjaan: ${h.noUrutPekerjaan}",
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.visibility),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => EditWorkResultScreen(
-                                            workResult: h,
-                                            isEditable: false,
-                                          ),
+    return Container(
+      decoration: AppTheme.gradientBackground,
+      child: Stack(
+        children: [
+          _editableBkm.workResults.isEmpty
+              ? const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.work_off, size: 64, color: Colors.grey),
+                      SizedBox(height: 16),
+                      Text(
+                        "No Hasil Kerja",
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _editableBkm.workResults.length,
+                  itemBuilder: (context, index) {
+                    final h = _editableBkm.workResults[index];
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: AppTheme.cardDecoration,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Pekerjaan #${h.noUrutPekerjaan}",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: AppTheme.primaryColor,
                                         ),
-                                      );
-                                    },
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        h.jenisPekerjaan,
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  if (widget.isEditable)
-                                    IconButton(
-                                      icon: const Icon(Icons.edit, color: Colors.blue),
-                                      onPressed: () async {
-                                        final result = await Navigator.push(
+                                ),
+                                Row(
+                                  children: [
+                                    _buildActionButton(
+                                      Icons.visibility,
+                                      Colors.blue,
+                                      () {
+                                        Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (_) => EditWorkResultScreen(
                                               workResult: h,
-                                              isEditable: true,
-                                              isOperator: widget.userType == UserType.operator,
+                                              isEditable: false,
                                             ),
                                           ),
                                         );
-                                        if (result != null) {
-                                          setState(() {
-                                            _editableBkm.workResults[index] = result;
-                                          });
-                                        }
                                       },
                                     ),
-                                  if (widget.isEditable && widget.userType != UserType.operator)
-                                    IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red),
-                                      onPressed: () {
-                                        setState(() => _editableBkm.workResults.removeAt(index));
-                                      },
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Text("Complex: ${h.complex}"),
-                          Text("No Blok: ${h.noBlok}"),
-                          Text("Luas Blok: ${h.luasBlok}"),
-                          Text("Jenis Pekerjaan: ${h.jenisPekerjaan}"),
-                          Text("Jumlah HK: ${h.jumlahHk}"),
-                        ],
+                                    if (widget.isEditable)
+                                      _buildActionButton(
+                                        Icons.edit,
+                                        AppTheme.warningColor,
+                                        () async {
+                                          final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => EditWorkResultScreen(
+                                                workResult: h,
+                                                isEditable: true,
+                                                isOperator: widget.userType == UserType.operator,
+                                              ),
+                                            ),
+                                          );
+                                          if (result != null) {
+                                            setState(() {
+                                              _editableBkm.workResults[index] = result;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    if (widget.isEditable && widget.userType != UserType.operator)
+                                      _buildActionButton(
+                                        Icons.delete,
+                                        AppTheme.errorColor,
+                                        () {
+                                          setState(() => _editableBkm.workResults.removeAt(index));
+                                        },
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            _buildInfoRow(Icons.business, "Complex", h.complex),
+                            _buildInfoRow(Icons.grid_view, "No Blok", h.noBlok),
+                            _buildInfoRow(Icons.square_foot, "Luas Blok", "${h.luasBlok} ha"),
+                            _buildInfoRow(Icons.people, "Jumlah HK", h.jumlahHk.toString()),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+          if (widget.isEditable && widget.userType != UserType.operator)
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: FloatingActionButton.extended(
+                heroTag: "addWorkResult",
+                onPressed: () async {
+                  final newItem = HasilKerja();
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditWorkResultScreen(
+                        workResult: newItem,
+                        isEditable: true,
                       ),
                     ),
                   );
+                  if (result != null) {
+                    setState(() => _editableBkm.workResults.add(result));
+                  }
                 },
+                icon: const Icon(Icons.add),
+                label: const Text('Add'),
               ),
-        if (widget.isEditable && widget.userType != UserType.operator)
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: FloatingActionButton(
-              heroTag: "addWorkResult",
-              onPressed: () async {
-                final newItem = HasilKerja();
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => EditWorkResultScreen(
-                      workResult: newItem,
-                      isEditable: true,
-                    ),
-                  ),
-                );
-                if (result != null) {
-                  setState(() => _editableBkm.workResults.add(result));
-                }
-              },
-              child: const Icon(Icons.add),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(IconData icon, Color color, VoidCallback onPressed) {
+    return Container(
+      margin: const EdgeInsets.only(left: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: color, size: 18),
+        onPressed: onPressed,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: Colors.grey[600]),
+          const SizedBox(width: 8),
+          Text(
+            "$label: ",
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[700],
+              fontSize: 13,
             ),
           ),
-      ],
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
