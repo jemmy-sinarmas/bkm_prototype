@@ -43,10 +43,20 @@ class _EditWorkerScreenState extends State<EditWorkerScreen> {
     Navigator.pop(context, w);
   }
 
+  void _goBack() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.worker == null ? "Tambah Pekerja" : "Edit Pekerja")),
+      appBar: AppBar(
+        title: Text(widget.worker == null ? "Tambah Pekerja" : "Edit Pekerja"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

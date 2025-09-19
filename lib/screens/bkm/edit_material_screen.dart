@@ -51,10 +51,20 @@ class _EditMaterialScreenState extends State<EditMaterialScreen> {
     Navigator.pop(context, m);
   }
 
+  void _goBack() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.material == null ? "Tambah Bahan" : "Edit Bahan")),
+      appBar: AppBar(
+        title: Text(widget.material == null ? "Tambah Bahan" : "Edit Bahan"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

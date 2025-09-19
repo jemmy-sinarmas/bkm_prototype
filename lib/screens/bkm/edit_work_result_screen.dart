@@ -1,16 +1,21 @@
 import 'package:bkm_prototype/models/work_result.dart';
+import 'package:bkm_prototype/widgets/filtered_plantation_dropdown.dart';
 import 'package:flutter/material.dart';
 
 class EditWorkResultScreen extends StatefulWidget {
   final HasilKerja? workResult;
   final bool isEditable;
   final bool isOperator;
+  final String unitKerja;
+  final String divisi;
 
   const EditWorkResultScreen({
     super.key,
     this.workResult,
     this.isEditable = true,
     this.isOperator = false,
+    required this.unitKerja,
+    required this.divisi,
   });
 
   @override
@@ -18,12 +23,12 @@ class EditWorkResultScreen extends StatefulWidget {
 }
 
 class _EditWorkResultScreenState extends State<EditWorkResultScreen> {
-  late TextEditingController complexController;
+  String? selectedComplex;
+  String? selectedBlock;
   late TextEditingController jenisPekerjaanController;
   late TextEditingController jumlahHkController;
   late TextEditingController hasilController;
   late TextEditingController uomController;
-  late TextEditingController noBlokController;
   late TextEditingController luasBlokController;
   late TextEditingController keteranganController;
   late TextEditingController workOrderController;
@@ -35,8 +40,8 @@ class _EditWorkResultScreenState extends State<EditWorkResultScreen> {
   @override
   void initState() {
     super.initState();
-    complexController =
-        TextEditingController(text: widget.workResult?.complex ?? "");
+    selectedComplex = widget.workResult?.complex;
+    selectedBlock = widget.workResult?.noBlok;
     jenisPekerjaanController =
         TextEditingController(text: widget.workResult?.jenisPekerjaan ?? "");
     jumlahHkController =
@@ -45,8 +50,6 @@ class _EditWorkResultScreenState extends State<EditWorkResultScreen> {
         TextEditingController(text: widget.workResult?.hasil.toString() ?? "");
     uomController =
         TextEditingController(text: widget.workResult?.uomHasil ?? "");
-    noBlokController =
-        TextEditingController(text: widget.workResult?.noBlok ?? "");
     luasBlokController =
         TextEditingController(text: widget.workResult?.luasBlok.toString() ?? "");
     keteranganController =
@@ -63,12 +66,12 @@ class _EditWorkResultScreenState extends State<EditWorkResultScreen> {
 
   void _save() {
     final wr = HasilKerja(
-      complex: complexController.text,
+      complex: selectedComplex ?? '',
+      noBlok: selectedBlock ?? '',
       jenisPekerjaan: jenisPekerjaanController.text,
       jumlahHk: double.tryParse(jumlahHkController.text) ?? 0,
       hasil: double.tryParse(hasilController.text) ?? 0,
       uomHasil: uomController.text,
-      noBlok: noBlokController.text,
       luasBlok: double.tryParse(luasBlokController.text) ?? 0,
       keterangan: keteranganController.text,
       workOrder: workOrderController.text,
@@ -79,16 +82,34 @@ class _EditWorkResultScreenState extends State<EditWorkResultScreen> {
     Navigator.pop(context, wr);
   }
 
+  void _goBack() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.workResult == null ? "Tambah Hasil Kerja" : "Edit Hasil Kerja")),
+      appBar: AppBar(
+        title: Text(widget.workResult == null ? "Tambah Hasil Kerja" : "Edit Hasil Kerja"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildField("Complex", complexController),
-            _buildField("No Blok", noBlokController),
+            FilteredPlantationDropdown(
+              unitKerja: widget.unitKerja,
+              divisi: widget.divisi,
+              selectedComplex: selectedComplex,
+              selectedBlock: selectedBlock,
+              onComplexChanged: (value) => setState(() => selectedComplex = value),
+              onBlockChanged: (value) => setState(() => selectedBlock = value),
+              enabled: widget.isEditable && !widget.isOperator,
+            ),
+            const SizedBox(height: 16),
             _buildField("Luas Blok", luasBlokController, keyboard: TextInputType.number),
             _buildField("Jenis Pekerjaan", jenisPekerjaanController),
             _buildField("Jumlah HK", jumlahHkController, keyboard: TextInputType.number),

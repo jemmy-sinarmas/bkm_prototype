@@ -49,10 +49,20 @@ class _EditTransportScreenState extends State<EditTransportScreen> {
     Navigator.pop(context, t);
   }
 
+  void _goBack() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.transport == null ? "Tambah Transport" : "Edit Transport")),
+      appBar: AppBar(
+        title: Text(widget.transport == null ? "Tambah Transport" : "Edit Transport"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

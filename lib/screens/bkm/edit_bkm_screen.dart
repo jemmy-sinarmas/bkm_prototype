@@ -7,6 +7,8 @@ import 'package:bkm_prototype/screens/bkm/edit_work_result_screen.dart';
 import 'package:bkm_prototype/screens/bkm/edit_worker_screen.dart';
 import 'package:bkm_prototype/screens/bkm/edit_transport_screen.dart';
 import 'package:bkm_prototype/constants/unit_kegiatan.dart';
+import 'package:bkm_prototype/widgets/unit_division_dropdown.dart';
+import 'package:bkm_prototype/services/bkm_data_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../models/bkm.dart';
@@ -33,6 +35,7 @@ class _EditBKMScreenState extends State<EditBKMScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late BKM _editableBkm;
+  final BKMDataService _bkmService = BKMDataService();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -40,9 +43,24 @@ class _EditBKMScreenState extends State<EditBKMScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
-    _editableBkm = widget.bkm;
-    // Ensure transports is never null
-    _editableBkm.transports;
+    _editableBkm = _copyBkm(widget.bkm);
+  }
+
+  BKM _copyBkm(BKM original) {
+    return BKM(
+      noSeriBkm: original.noSeriBkm,
+      unitKerja: original.unitKerja,
+      divisi: original.divisi,
+      kemandoran: original.kemandoran,
+      namaMandor: original.namaMandor,
+      unitKegiatan: original.unitKegiatan,
+      tanggalKegiatan: original.tanggalKegiatan,
+      status: original.status,
+      workResults: List.from(original.workResults),
+      materials: List.from(original.materials),
+      workers: List.from(original.workers),
+      transports: List.from(original.transports),
+    );
   }
 
   void _save() {
@@ -51,15 +69,20 @@ class _EditBKMScreenState extends State<EditBKMScreen>
         _formKey.currentState!.save();
       }
     }
+    _bkmService.updateBKM(_editableBkm);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Document saved successfully')),
     );
     Navigator.pop(context, _editableBkm);
   }
 
+  void _goBack() {
+    Navigator.pop(context);
+  }
+
   Widget _buildTab(IconData icon, String text) {
     return Tab(
-      height: 60,
+      height: 80,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
@@ -111,9 +134,7 @@ class _EditBKMScreenState extends State<EditBKMScreen>
                   const SizedBox(height: 16),
                   _buildField("No Seri BKM", _editableBkm.noSeriBkm, (val) => _editableBkm.noSeriBkm = val),
                   const SizedBox(height: 16),
-                  _buildField("Unit Kerja", _editableBkm.unitKerja, (val) => _editableBkm.unitKerja = val),
-                  const SizedBox(height: 16),
-                  _buildField("Divisi", _editableBkm.divisi, (val) => _editableBkm.divisi = val),
+                  _buildUnitDivisionDropdowns(),
                   const SizedBox(height: 16),
                   _buildField("Kemandoran", _editableBkm.kemandoran, (val) => _editableBkm.kemandoran = val),
                   const SizedBox(height: 16),
@@ -141,6 +162,41 @@ class _EditBKMScreenState extends State<EditBKMScreen>
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildUnitDivisionDropdowns() {
+    return UnitDivisionDropdown(
+      selectedUnit: _editableBkm.unitKerja,
+      selectedDivision: _editableBkm.divisi,
+      onUnitChanged: (value) => setState(() => _editableBkm.unitKerja = value ?? ''),
+      onDivisionChanged: (value) async {
+        if (value != _editableBkm.divisi && _editableBkm.workResults.isNotEmpty) {
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Confirm Division Change'),
+              content: const Text('Changing estate/division will remove all work result data. Continue?'),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Continue')),
+              ],
+            ),
+          );
+          if (confirm == true) {
+            setState(() {
+              _editableBkm.divisi = value ?? '';
+              _editableBkm.workResults.clear();
+              _editableBkm.materials.clear();
+              _editableBkm.workers.clear();
+              _editableBkm.transports.clear();
+            });
+          }
+        } else {
+          setState(() => _editableBkm.divisi = value ?? '');
+        }
+      },
+      enabled: widget.isEditable && widget.userType != UserType.operator,
     );
   }
 
@@ -288,6 +344,8 @@ class _EditBKMScreenState extends State<EditBKMScreen>
                                             builder: (_) => EditWorkResultScreen(
                                               workResult: h,
                                               isEditable: false,
+                                              unitKerja: _editableBkm.unitKerja,
+                                              divisi: _editableBkm.divisi,
                                             ),
                                           ),
                                         );
@@ -305,6 +363,8 @@ class _EditBKMScreenState extends State<EditBKMScreen>
                                                 workResult: h,
                                                 isEditable: true,
                                                 isOperator: widget.userType == UserType.operator,
+                                                unitKerja: _editableBkm.unitKerja,
+                                                divisi: _editableBkm.divisi,
                                               ),
                                             ),
                                           );
@@ -352,6 +412,8 @@ class _EditBKMScreenState extends State<EditBKMScreen>
                       builder: (_) => EditWorkResultScreen(
                         workResult: newItem,
                         isEditable: true,
+                        unitKerja: _editableBkm.unitKerja,
+                        divisi: _editableBkm.divisi,
                       ),
                     ),
                   );
@@ -763,6 +825,10 @@ class _EditBKMScreenState extends State<EditBKMScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text("BKM - Operator"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -800,6 +866,10 @@ class _EditBKMScreenState extends State<EditBKMScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text("BKM Review - Asisten Divisi"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -851,6 +921,10 @@ class _EditBKMScreenState extends State<EditBKMScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text("Detail BKM"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
         actions: [
           if (widget.isEditable)
             IconButton(
@@ -889,11 +963,14 @@ class _EditBKMScreenState extends State<EditBKMScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text("Detail BKM - Web View"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
         actions: [
           if (widget.isEditable)
-            ElevatedButton.icon(
+            IconButton(
               icon: const Icon(Icons.save),
-              label: const Text("Save"),
               onPressed: _save,
             ),
         ],
